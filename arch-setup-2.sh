@@ -70,6 +70,9 @@ code --install-extension ms-vscode-remote.remote-containers
 
 
 # postgresql
+# remote
+# sudo rm -rf /var/lib/postgres/data
+# sudo pacman -R postgresql postgis
 sudo pacman -Sy --needed postgresql postgis
 sudo -u postgres bash -c "initdb --locale $LANG -E UTF8 -D '/var/lib/postgres/data'"
 sudo perl -pibak -e 's/ident/trust/' /var/lib/postgres/data/pg_hba.conf
