@@ -157,8 +157,8 @@ sheldon add autols --github desyncr/auto-ls
 
 export ZDOTDIR=~/.config/zsh
 [[ ! -d $ZDOTDIR ]] && mkdir $ZDOTDIR
-echo 'eval "$(sheldon source)"' >$ZDOTDIR/.zshrc
 echo "ZDOTDIR=${ZDOTDIR}" >~/.zshenv
+cp ~/arch-setup/.zshrc $ZDOTDIR
 cp ~/arch-setup/.p10k.zsh $ZDOTDIR
 #test
 #zsh
