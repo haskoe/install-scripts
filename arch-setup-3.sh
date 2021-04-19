@@ -1,3 +1,10 @@
+# ssh
+hostname=`hostname`
+ssh_fname=id_$hostname
+ssh-keygen -f ~/.ssh/${ssh_fname}
+# todo: copy to all hosts in SSH_HOSTS
+#ssh-copy-id -i ~/.ssh/${ssh_fname}.pub $USER@......
+
 #eval `keychain --agents ssh --eval ~/.ssh/id_hg`
 SSH_ID=id_hg
 # abort if id_hg is not in keyring

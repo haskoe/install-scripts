@@ -3,8 +3,8 @@
 SSH_HOSTS=()
 PREFERRED_LOCALE_PREFIX=da_
 PREFERRED_LOCALE=da_DK
-GH_EMAIL= #$USER
-GH_EMAIL= #henrik@haskoe.dk
+GH_EMAIL=haskoe
+GH_EMAIL=henrik@haskoe.dk
 
 # abort if GH_USER is not set
 [[ -z "$GH_EMAIL" ]] && echo "GH_EMAIL must be set" && exit 1
@@ -20,18 +20,14 @@ BAK_DIR=~/bak/i3
 cp ~/.config/i3/config $BAK_DIR
 cp ~/arch-setup/i3/i3-config ~/.config/i3/config
 
-grep -q arch-setup ~/.bashrc
-[[ ! "$?"=="0" ]] && echo ". ~/arch-setup/.bash/.bashrc" >>~/.bashrc
+#grep -q arch-setup ~/.bashrc
+#[[ ! "$?"=="0" ]] && 
+echo ". ~/arch-setup/.bash/.bashrc" >>~/.bashrc
 source ~/.bashrc
 
 # autorandr
 # xrandr --output HDMI1 --auto --output eDP1 --off
 # autorandr --save docked
-
-# locale
-sudo perl -pibak -e 's/^#${PREFERRED_LOCALE_PREFIX}/${PREFERRED_LOCALE_PREFIX}/g' /etc/locale.conf
-sudo locale-gen
-sudo localectl set-locale LANG=${PREFERRED_LOCALE}.UTF-8
 
 git config --global user.name $USER
 git config --global user.email $GH_EMAIL
@@ -99,21 +95,6 @@ sudo -u postgres createuser -s -d $USER
 sudo systemctl stop postgresql
 yay -Sy postgrest
 
-# octave
-sudo pacman -Sy --needed octave gcc-fortran
-octave --eval "pkg install -forge control"
-octave --eval "pkg install -forge signal"
-# clone haskoe repo
-# cd ....
-# octave patient_plot_full_csi.m
-
-# ssh
-hostname=`hostname`
-ssh_fname=id_$hostname
-ssh-keygen -f ~/.ssh/${ssh_fname}
-# todo: copy to all hosts in SSH_HOSTS
-#ssh-copy-id -i ~/.ssh/${ssh_fname}.pub $USER@......
-
 # mode 2560 on older intel CPUs
 HDMI=HDMI1
 tee -a ~/mode-2560.sh <<-EOF
@@ -147,7 +128,7 @@ sudo perl -pibak -e 's/^#unix_sock_group/unix_sock_group/' /etc/libvirt/libvirtd
 sudo perl -pibak -e 's/^#unix_sock_rw_perms/unix_sock_rw_perms/' /etc/libvirt/libvirtd.conf
 sudo systemctl start libvirtd.service
 
-sudo usermod --shell /bin/bash $USER
+#sudo usermod --shell /bin/bash $USER
 
 # rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -158,7 +139,8 @@ source ~/.cargo/env
 yay -Sy nerd-fonts-hermit
 fc-cache -fv
 
-yay -Sy sheldon
+#yay -Sy sheldon
+cargo install sheldon
 sheldon init --shell zsh
 sheldon add base16 --github chriskempson/base16-shell
 sheldon add zsh-autosuggestions --github zsh-users/zsh-autosuggestions --use '{{ name }}.zsh'
@@ -167,7 +149,7 @@ sheldon add zsh-syntax-highlighting --github zsh-users/zsh-syntax-highlighting
 #sheldon add z.lua --github skywind3000/z.lua
 sheldon add enhancd --github b4b4r07/enhancd
 sheldon add powerlevel10k --github romkatv/powerlevel10k
-#sheldon remove enhancd
+sheldon remove enhancd
 sheldon add autols --github desyncr/auto-ls
 
 export ZDOTDIR=~/.config/zsh

@@ -49,7 +49,7 @@ then
     CD_TO=/tmp/whereami
     [[ -f $CD_TO ]] && cd $(cat ${CD_TO})
 fi
-export LC_ALL=da_DK.UTF-8
-export LANG=da_DK.UTF-8
+#export LC_ALL=da_DK.UTF-8
+#export LANG=da_DK.UTF-8
 
 export PYTHONPATH=~/dev/azure-repos/misc/misc/fileorganizer

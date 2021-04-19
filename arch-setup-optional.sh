@@ -35,3 +35,12 @@ Host 10.0.0.3
  HostName 10.0.0.3
  User $USER
 EOF
+
+# octave
+sudo pacman -Sy --needed octave gcc-fortran
+octave --eval "pkg install -forge control"
+octave --eval "pkg install -forge signal"
+# clone haskoe repo
+# cd ....
+# octave patient_plot_full_csi.m
+
