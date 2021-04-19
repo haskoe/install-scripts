@@ -172,7 +172,7 @@ bindsym $mod+g exec --no-startup-id chromium
 bindsym $mod+m exec --no-startup-id thunderbird
 bindsym $mod+u exec --no-startup-id thunar
 bindsym $mod+i exec --no-startup-id idle
-bindsym $mod+r exec urxvt -e ranger
+bindsym $mod+r exec terminator -e ranger
 #bindsym $mod+r exec --no-startup-id ranger
 bindsym $mod+x exec i3-input -F 'exec i3-wrapper "%s"'
 

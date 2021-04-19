@@ -67,7 +67,7 @@ code --install-extension ms-azuretools.vscode-docker
 code --install-extension ms-vscode-remote.vscode-remote-extensionpack 
 code --install-extension ms-vscode-remote.remote-ssh 
 code --install-extension ms-vscode-remote.remote-containers
-
+code --install-extension vadimcn.vscode-lldb
 
 # postgresql
 # remote

@@ -51,3 +51,12 @@ DI_DIR=~/proj
 wget https://dot.net/v1/dotnet-install.sh
 mv dotnet-install.sh $DI_DIR
 ~/proj/dotnet-install.sh --install-dir /usr/share/dotnet -channel Current -version latest
+
+# jupyter simpy notebook
+docker run -p 8888:8888 jupyter/scipy-notebook
+# paste below in 
+from sympy import *
+x, y, z, t = symbols('x y z t')
+integrate(exp(x)*sin(x) + exp(x)*cos(x), x)
+eq = tan(sympy.log(x**2 + 1))
+eq.diff(x)
