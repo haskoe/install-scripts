@@ -99,7 +99,7 @@ sudo systemctl stop postgresql
 yay -Sy postgrest
 
 # mode 2560 on older intel CPUs
-HDMI=HDMI1
+HDMI=HDMI2
 tee -a ~/mode-2560.sh <<-EOF
 # 2560x1440 on older intel GPUs
 xrandr --newmode "2560x1440_40.00"  201.00  2560 2720 2984 3408  1440 1443 1448 1476 +hsync +vsync
@@ -112,8 +112,8 @@ sudo pacman -Sy --needed docker
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo usermod -a -G docker $USER
-sudo su $USER
-docker run -it --rm archlinux bash -c "echo hello world"
+#sudo su $USER
+#docker run -it --rm archlinux bash -c "echo hello world"
 
 # KVM
 # checks
@@ -152,6 +152,7 @@ sheldon add zsh-syntax-highlighting --github zsh-users/zsh-syntax-highlighting
 #sheldon add z.lua --github skywind3000/z.lua
 sheldon add enhancd --github b4b4r07/enhancd
 sheldon add powerlevel10k --github romkatv/powerlevel10k
+sheldon add oh-my-zsh --github "ohmyzsh/ohmyzsh"
 sheldon remove enhancd
 sheldon add autols --github desyncr/auto-ls
 
