@@ -42,5 +42,12 @@ octave --eval "pkg install -forge control"
 octave --eval "pkg install -forge signal"
 # clone haskoe repo
 # cd ....
+# gco master
 # octave patient_plot_full_csi.m
 
+# dotnet
+DI_DIR=~/proj
+[[ ! -d $DI_DIR ]] && mkdir $DI_DIR
+wget https://dot.net/v1/dotnet-install.sh
+mv dotnet-install.sh $DI_DIR
+~/proj/dotnet-install.sh --install-dir /usr/share/dotnet -channel Current -version latest
