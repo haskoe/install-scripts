@@ -30,3 +30,4 @@ bash ~/dev/azure-repos/misc/misc/git/status-all-branches.sh
 mkdir -p ~/dev/haskoe
 cd ~/dev/haskoe
 git clone https://github.com/haskoe/ecg_epilepsy.git
+

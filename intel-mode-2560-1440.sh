@@ -1,7 +1,9 @@
 # mode 2560 on older intel CPUs
 HDMI=`xrandr | grep ^HDMI | sed -e 's/\s.*$//'`
-[[ "HDMI"=="" ]] && exit 1
+[[ "${HDMI}" = "" ]] && echo "No HDMI" && exit 1
 
+# two HDMI from xrandr .....
+HDMI=HDMI2
 SCRPT=~/mode-2560.sh
 tee -a $SCRPT <<-EOF
 # 2560x1440 on older intel GPUs

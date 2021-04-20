@@ -34,12 +34,12 @@ tee $SCRIPTPATH/i3/i3-xautolock.sh <<-EOF
 pkill xautolock
 xautolock -time 5 -locker '$SCRIPTPATH/i3/i3-lock.sh' &
 EOF
-exit 1
+
 # autorandr
 # xrandr --output HDMI1 --auto --output eDP1 --off
 # autorandr --save docked
 
-git config --global user.name $USER
+git config --global user.name $GH_USER
 git config --global user.email $GH_EMAIL
 
 sudo systemctl enable sshd
