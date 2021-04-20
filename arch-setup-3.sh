@@ -1,3 +1,6 @@
+# test docker
+#docker run -it --rm archlinux bash -c "echo hello world"
+
 # ssh
 hostname=`hostname`
 ssh_fname=id_$hostname

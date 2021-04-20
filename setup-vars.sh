@@ -1,0 +1,5 @@
+SSH_HOSTS=()
+PREFERRED_LOCALE= #en_DK.UTF-8
+PREFERRED_KEYMAP= #dk
+GH_EMAIL= #haskoe
+GH_EMAIL= #henrik@haskoe.dk
