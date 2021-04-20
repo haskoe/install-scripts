@@ -24,10 +24,17 @@ cp $SCRIPTPATH/i3/i3-config $I3_CONFIG
 
 tee -a $I3_CONFIG <<-EOF
 
-bindsym $mod+l exec --no-startup-id $SCRIPTPATH/i3/i3-lock.sh
+bindsym \$mod+Ctrl+l exec --no-startup-id $SCRIPTPATH/i3/i3-lock.sh
 exec --no-startup-id $SCRIPTPATH/i3/i3-xautolock.sh
 EOF
 
+tee $SCRIPTPATH/i3/i3-xautolock.sh <<-EOF
+#!/bin/sh -e
+
+pkill xautolock
+xautolock -time 5 -locker '$SCRIPTPATH/i3/i3-lock.sh' &
+EOF
+exit 1
 # autorandr
 # xrandr --output HDMI1 --auto --output eDP1 --off
 # autorandr --save docked
