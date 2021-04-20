@@ -32,6 +32,10 @@ alias agil='ag -i -l'
 alias agl='ag -l'
 alias agi='ag -i'
 
+alias rgil='rg -ilH'
+alias rgi='rg -iH'
+alias rg='rg -H'
+
 alias y='yarn'
 alias yd='yarn dev'
 alias yl='yarn link'
