@@ -3,20 +3,30 @@
 . `dirname "$0"`/setup-vars.sh
 
 # abort if GH_USER is not set
+[[ -z "$GH_USER" ]] && echo "GH_USER must be set" && exit 1
+
+# abort if GH_EMAIL is not set
 [[ -z "$GH_EMAIL" ]] && echo "GH_EMAIL must be set" && exit 1
 
 # abort if i3 is not active display env
 [[ ! "$XDG_CURRENT_DESKTOP"=="i3" ]] && echo "i3 is not running" && exit 1
 
-BAK_DIR=~/bak/i3
-[[ ! -d $BAK_DIR ]] && mkdir -p $BAK_DIR
-[[ ! -f ${BAK_DIR}/config ]] && cp ~/.config/i3/config $BAK_DIR
-cp ~/arch-setup/i3/i3-config ~/.config/i3/config
-
 grep -xq '^\..*\.bash\/\.bashrc' ~/.bashrc
 RETVAL=$?
-[[ $RETVAL -ne 0 ]] && echo ". ~/arch-setup/.bash/.bashrc" >>~/.bashrc
+[[ $RETVAL -ne 0 ]] && echo ". $SCRIPTPATH/.bash/.bashrc $SCRIPTPATH" >>~/.bashrc
 source ~/.bashrc
+
+BAK_DIR=~/bak/i3
+I3_CONFIG=~/.config/i3/config
+[[ ! -d $BAK_DIR ]] && mkdir -p $BAK_DIR
+[[ ! -f ${BAK_DIR}/config ]] && cp $I3_CONFIG $BAK_DIR
+cp $SCRIPTPATH/i3/i3-config $I3_CONFIG
+
+tee -a $I3_CONFIG <<-EOF
+
+bindsym $mod+l exec --no-startup-id $SCRIPTPATH/i3/i3-lock.sh
+exec --no-startup-id $SCRIPTPATH/i3/i3-xautolock.sh
+EOF
 
 # autorandr
 # xrandr --output HDMI1 --auto --output eDP1 --off
@@ -109,7 +119,7 @@ sheldon add autols --github desyncr/auto-ls
 export ZDOTDIR=~/.config/zsh
 [[ ! -d $ZDOTDIR ]] && mkdir $ZDOTDIR
 echo "ZDOTDIR=${ZDOTDIR}" >~/.zshenv
-cp ~/arch-setup/.zshrc $ZDOTDIR
-cp ~/arch-setup/.p10k.zsh $ZDOTDIR
+cp $SCRIPTPATH/.zshrc $ZDOTDIR
+cp $SCRIPTPATH/.p10k.zsh $ZDOTDIR
 #test
 #zsh

@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+SCRIPTPATH=$1/.bash
+[[ ! -f $SCRIPTPATH/.bashrc ]] && echo "path to parent dir. of this script must be given as first argument" && return 1
+
 if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
   exec startx
 fi
@@ -26,8 +29,7 @@ vs() {
 export PROMPT_COMMAND="pwd > /tmp/whereami"
 export PGOPTIONS='--client-min-messages=warning' 
 
-local_dir=~/arch-setup/.bash
-heas_aliases=${local_dir}/.bash_aliases
+heas_aliases=$SCRIPTPATH/.bash_aliases
 if [ -f $heas_aliases ]; then
     . $heas_aliases
 fi
@@ -49,7 +51,5 @@ then
     CD_TO=/tmp/whereami
     [[ -f $CD_TO ]] && cd $(cat ${CD_TO})
 fi
-#export LC_ALL=da_DK.UTF-8
-#export LANG=da_DK.UTF-8
 
-export PYTHONPATH=~/dev/azure-repos/misc/misc/fileorganizer
+#export PYTHONPATH=~/dev/azure-repos/misc/misc/fileorganizer
