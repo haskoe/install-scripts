@@ -6,8 +6,7 @@ SCRIPTPATH=$1/.bash
 if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
   exec startx
 fi
-
-#eval $(keychain --eval id_hg id_${HOSTNAME})
+eval $(keychain --eval id_hg id_${HOSTNAME})
 
 npub() {
     [[ ! -f "package.json" ]] && echo "No package.json" && return 1
