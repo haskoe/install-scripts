@@ -11,7 +11,7 @@ BASH_ALIASES=$SCRIPTPATH/.bash_aliases
 #   exec startx
 # fi
 
-#eval `keychain --eval --agents ssh id_${HOSTNAME}`
+eval `keychain --eval --agents ssh id_${HOSTNAME}`
 
 npub() {
     [[ ! -f "package.json" ]] && echo "No package.json" && return 1
