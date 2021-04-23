@@ -1,12 +1,17 @@
 #!/bin/bash -e
 
-SCRIPTPATH=$1/.bash
-[[ ! -f $SCRIPTPATH/.bashrc ]] && echo "path to parent dir. of this script must be given as first argument" && return 1
+SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
-  exec startx
-fi
-eval $(keychain --eval id_hg id_${HOSTNAME})
+BASH_ALIASES=$SCRIPTPATH/.bash_aliases
+[[ ! -f $BASH_ALIASES ]] && echo "cant get path to parent dir - exiting!!" && return 1
+
+. $BASH_ALIASES
+
+# if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
+#   exec startx
+# fi
+
+#eval `keychain --eval --agents ssh id_${HOSTNAME}`
 
 npub() {
     [[ ! -f "package.json" ]] && echo "No package.json" && return 1
@@ -22,16 +27,8 @@ vs() {
     . ~/dev/azure-repos/cs/tools/bat/start_vscode.sh $1 $2
 }
 
-# put this in ~/.bashrc
-# alias vsc='code-insiders'
-#. ~/dev/azure-repos/linux/ubuntu/.bashrc
 export PROMPT_COMMAND="pwd > /tmp/whereami"
 export PGOPTIONS='--client-min-messages=warning' 
-
-heas_aliases=$SCRIPTPATH/.bash_aliases
-if [ -f $heas_aliases ]; then
-    . $heas_aliases
-fi
 
 NPM_PACKAGES=~/.npm-packages
 NODE_PATH=~/.npm-packages/lib/node_modules
