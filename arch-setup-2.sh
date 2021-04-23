@@ -1,6 +1,8 @@
 #!/bin/bash
 
-. `dirname "$0"`/setup-vars.sh
+SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+. SCRIPTPATH/setup-vars.sh
 
 # abort if GH_USER is not set
 [[ -z "$GH_USER" ]] && echo "GH_USER must be set" && exit 1
@@ -15,6 +17,7 @@ grep -xq '^\..*\.bash\/\.bashrc' ~/.bashrc
 RETVAL=$?
 [[ $RETVAL -ne 0 ]] && echo ". $SCRIPTPATH/.bash/.bashrc $SCRIPTPATH" >>~/.bashrc
 source ~/.bashrc
+
 
 BAK_DIR=~/bak/i3
 I3_CONFIG=~/.config/i3/config
