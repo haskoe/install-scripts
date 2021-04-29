@@ -20,7 +20,8 @@ source ~/.bashrc
 
 
 BAK_DIR=~/bak/i3
-I3_CONFIG=~/.config/i3/config
+I3_CONFIG_PATH=~/.config/i3
+I3_CONFIG=${I3_CONFIG_PATH}/config
 [[ ! -d $BAK_DIR ]] && mkdir -p $BAK_DIR
 [[ ! -f ${BAK_DIR}/config ]] && cp $I3_CONFIG $BAK_DIR
 cp $SCRIPTPATH/i3/i3-config $I3_CONFIG
@@ -31,7 +32,7 @@ bindsym \$mod+Ctrl+l exec --no-startup-id $SCRIPTPATH/i3/i3-lock.sh
 exec --no-startup-id $SCRIPTPATH/i3/i3-xautolock.sh
 EOF
 
-tee $SCRIPTPATH/i3/i3-xautolock.sh <<-EOF
+tee ${I3_CONFIG_PATH}/i3-xautolock.sh <<-EOF
 #!/bin/sh -e
 
 #pkill xautolock
