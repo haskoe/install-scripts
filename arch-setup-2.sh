@@ -34,7 +34,7 @@ EOF
 tee $SCRIPTPATH/i3/i3-xautolock.sh <<-EOF
 #!/bin/sh -e
 
-pkill xautolock
+#pkill xautolock
 xautolock -time 5 -locker '$SCRIPTPATH/i3/i3-lock.sh' &
 EOF
 
