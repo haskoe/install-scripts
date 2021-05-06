@@ -107,6 +107,9 @@ sudo systemctl start libvirtd.service
 # rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source ~/.cargo/env
+cargo install cargo-edit # cargo add <dependency>
+
+
 
 # zsh, sheldon, nerd-fonts
 #yay nerd-fonts-complete
