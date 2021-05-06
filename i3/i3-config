@@ -167,6 +167,23 @@ bindsym $mod+z mode "resize"
 # finds out, if available)
 bar {
         status_command i3status
+    status_command    i3status
+    position          top
+#    mode              hide
+    workspace_buttons yes
+#    tray_output       none
+    
+    font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
+
+    colors {
+        background #000000
+        statusline #ffffff
+
+        focused_workspace  #ffffff #285577
+        active_workspace   #ffffff #333333
+        inactive_workspace #888888 #222222
+        urgent_workspace   #ffffff #900000
+    }        
 }
 bindsym $mod+g exec --no-startup-id chromium
 bindsym $mod+m exec --no-startup-id thunderbird
