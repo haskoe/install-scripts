@@ -31,3 +31,12 @@ mkdir -p ~/dev/haskoe
 cd ~/dev/haskoe
 git clone https://github.com/haskoe/ecg_epilepsy.git
 
+# icc profile
+yay -S xiccd
+sudo systemctl enable --now colord
+xiccd &
+colormgr get-devices
+colormgr get-profiles 
+colormgr device-add-profile "xrandr-BenQ GW2765-5AE00001019" icc-666e1c8857493a779957c377b08c44af
+colormgr device-make-profile-default  "xrandr-BenQ GW2765-5AE00001019" icc-666e1c8857493a779957c377b08c44af
+# reboot
