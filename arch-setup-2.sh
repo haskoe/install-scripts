@@ -62,6 +62,13 @@ git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
 
+yay -S tigervnc w3m-imgcat gtk2-perl ueberzug mediainfo exiftool
+
+# ranger rc.conf
+ranger --copy-config=all
+perl -pibak -e 's/set preview_images false/set preview_images true/' ~/.config/ranger/rc.conf
+
+# start ranger
 systemctl --user start pulseaudio.service
 systemctl --user start pulseaudio.socket
 # pavucontrol
