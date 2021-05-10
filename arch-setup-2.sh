@@ -62,7 +62,7 @@ git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
 
-yay -S tigervnc w3m-imgcat gtk2-perl ueberzug mediainfo exiftool
+yay -S tigervnc w3m-imgcat gtk2-perl ueberzug mediainfo perl-image-exiftool
 
 # ranger rc.conf
 ranger --copy-config=all
