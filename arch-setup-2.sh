@@ -67,6 +67,7 @@ yay -S tigervnc w3m-imgcat gtk2-perl ueberzug mediainfo perl-image-exiftool
 # ranger rc.conf
 ranger --copy-config=all
 perl -pibak -e 's/set preview_images false/set preview_images true/' ~/.config/ranger/rc.conf
+perl -pibak -e 's/set column_ratios.*$/set column_ratios 1,2,9/' ~/.config/ranger/rc.conf
 
 # start ranger
 systemctl --user start pulseaudio.service
