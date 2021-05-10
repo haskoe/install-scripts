@@ -1,0 +1,6 @@
+Insert below before exit 7 in rc.conf
+            META_JSON=$(dirname ${FILE_PATH})/.meta.json
+            echo `basename ${FILE_PATH}` >>${META_JSON}
+
+open vscode below ranger and open .meta.json and add metadata tags below each new added file name
+aa
