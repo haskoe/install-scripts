@@ -32,6 +32,11 @@ floating_modifier $mod
 # start a terminal
 bindsym $mod+Return exec terminator
 
+
+bindsym $mod+Ctrl+l exec --no-startup-id ~/.config/i3/i3-lock.sh
+#exec ~/.config/i3/i3-xautolock.sh
+exec xautolock -time 1 -locker "~/.config/i3/i3-lock.sh" &
+
 # kill focused window
 bindsym $mod+Shift+q kill
 
