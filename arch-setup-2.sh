@@ -2,7 +2,9 @@
 
 SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-. SCRIPTPATH/setup-vars.sh
+. $SCRIPTPATH/setup-vars.sh
+
+. $SCRIPTPATH/i3-update-config.sh
 
 # abort if GH_USER is not set
 [[ -z "$GH_USER" ]] && echo "GH_USER must be set" && exit 1
@@ -10,34 +12,10 @@ SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 # abort if GH_EMAIL is not set
 [[ -z "$GH_EMAIL" ]] && echo "GH_EMAIL must be set" && exit 1
 
-# abort if i3 is not active display env
-[[ ! "$XDG_CURRENT_DESKTOP"=="i3" ]] && echo "i3 is not running" && exit 1
-
 grep -xq '^\..*\.bash\/\.bashrc' ~/.bashrc
 RETVAL=$?
 [[ $RETVAL -ne 0 ]] && echo ". $SCRIPTPATH/.bash/.bashrc $SCRIPTPATH" >>~/.bashrc
 source ~/.bashrc
-
-
-BAK_DIR=~/bak/i3
-I3_CONFIG_PATH=~/.config/i3
-I3_CONFIG=${I3_CONFIG_PATH}/config
-[[ ! -d $BAK_DIR ]] && mkdir -p $BAK_DIR
-[[ ! -f ${BAK_DIR}/config ]] && cp $I3_CONFIG $BAK_DIR
-cp $SCRIPTPATH/i3/i3-config $I3_CONFIG
-
-tee -a $I3_CONFIG <<-EOF
-
-bindsym \$mod+Ctrl+l exec --no-startup-id $SCRIPTPATH/i3/i3-lock.sh
-exec --no-startup-id $SCRIPTPATH/i3/i3-xautolock.sh
-EOF
-
-tee ${I3_CONFIG_PATH}/i3-xautolock.sh <<-EOF
-#!/bin/sh -e
-
-#pkill xautolock
-xautolock -time 5 -locker '$SCRIPTPATH/i3/i3-lock.sh' &
-EOF
 
 # autorandr
 # xrandr --output HDMI1 --auto --output eDP1 --off
