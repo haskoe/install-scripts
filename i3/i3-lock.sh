@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+echo i3-loc >>~/.config/i3/log
+
 # Take a screenshot
 scrot /tmp/screen_locked.png
 
