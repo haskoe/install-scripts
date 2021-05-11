@@ -1,5 +1,5 @@
 #!/bin/sh -e
-
+#
 echo i3-xautolock >>~/.config/i3/log
 pkill xautolock
 echo i3-xautolock >>~/.config/i3/log
