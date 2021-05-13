@@ -7,3 +7,6 @@
 # remove duplicates from >1 targets with no prompt
 fdupes -dNr /run/media/heas/Seagate/ /run/media/heas/Expansion\ Drive/
 
+# exiftool: set create date to datetimeoriginal if create date is less than
+# useful when using phockup and create date is somehoe messed up
+exiftool -r '-createdate<datetimeoriginal' -if '$datetimeoriginal ge $createdate' src/run/media/has/Seagate
