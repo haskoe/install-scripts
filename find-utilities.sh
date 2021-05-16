@@ -10,3 +10,6 @@ fdupes -dNr /run/media/heas/Seagate/ /run/media/heas/Expansion\ Drive/
 # exiftool: set create date to datetimeoriginal if create date is less than
 # useful when using phockup and create date is somehoe messed up
 exiftool -r '-createdate<datetimeoriginal' -if '$datetimeoriginal ge $createdate' src/run/media/has/Seagate
+
+# rate files using exiftool
+https://firminmartin.com/en/posts/2020/12/rating_images_painlessly_with_exiftool/
