@@ -9,4 +9,4 @@ I3_CONFIG=${I3_CONFIG_PATH}/config
 
 cp $SCRIPTPATH/i3/i3-config $I3_CONFIG
 cp $SCRIPTPATH/i3/i3-lock.sh $I3_CONFIG_PATH
-cp $SCRIPTPATH/i3/i3-xautolock.sh $I3_CONFIG_PATH
+#cp $SCRIPTPATH/i3/i3-xautolock.sh $I3_CONFIG_PATH

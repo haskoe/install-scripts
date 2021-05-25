@@ -31,7 +31,7 @@ echo "new locale:$LANG"
 
 sudo timedatectl set-ntp true
 
-sudo pacman -Sy --needed python-pip zsh-completions openssh inetutils keychain bash-completion mc cdrkit qemu fd zola ripgrep xorg-server xorg-apps lightdm-gtk-greeter i3-gaps firefox ranger i3status terminator base-devel thunar chromium xorg-xinit nodejs autorandr sshfs samba alsa-utils alsa-plugins pulseaudio pulseaudio-alsa pulseaudio-bluetooth pulseaudio-equalizer imagemagick pavucontrol rxvt-unicode i3lock xautolock tk thunderbird gvfs-smb keepass tldr iwd p7zip emacs-nox ntfs-3g vlc smplayer maven rsync fdupes exfat-utils
+sudo pacman -Sy --needed python-pip zsh-completions openssh inetutils keychain bash-completion mc cdrkit qemu fd zola ripgrep xorg-server xorg-apps lightdm-gtk-greeter i3-gaps firefox ranger i3status terminator base-devel thunar chromium xorg-xinit nodejs autorandr sshfs samba alsa-utils alsa-plugins pulseaudio pulseaudio-alsa pulseaudio-bluetooth pulseaudio-equalizer imagemagick pavucontrol rxvt-unicode i3lock xautolock tk thunderbird gvfs-smb keepass tldr iwd p7zip emacs-nox ntfs-3g vlc smplayer maven rsync fdupes exfat-utils scrot smbclient cifs-utils thunar-volman iptables
 
 #eval keychain does not work with vscode and github auth
 # but couldnt get gnome-keyring and libsecret to work either
