@@ -2,6 +2,9 @@
 
 SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
+VPN_RC=~/.vpnrc
+[[ -f $VPN_RC ]] && . $VPN_RC
+
 BASH_ALIASES=$SCRIPTPATH/.bash_aliases
 [[ ! -f $BASH_ALIASES ]] && echo "cant get path to parent dir - exiting!!" && return 1
 
