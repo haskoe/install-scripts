@@ -40,7 +40,9 @@ git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
 
-yay -S tigervnc w3m-imgcat gtk2-perl ueberzug mediainfo perl-image-exiftool
+yay -S tigervnc w3m-imgcat gtk2-perl ueberzug mediainfo perl-image-exiftool git-credential-manager-core-bin
+
+git config --global credential.credentialStore secretservice
 
 # ranger rc.conf
 ranger --copy-config=all
