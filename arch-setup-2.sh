@@ -42,6 +42,7 @@ makepkg -si
 
 yay -S tigervnc w3m-imgcat gtk2-perl ueberzug mediainfo perl-image-exiftool git-credential-manager-core-bin
 
+git-credential-manager-core configure
 git config --global credential.credentialStore secretservice
 
 # ranger rc.conf

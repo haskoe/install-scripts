@@ -44,6 +44,6 @@ colormgr device-make-profile-default  "xrandr-BenQ GW2765-5AE00001019" icc-666e1
 
 # terminator theme
 pip install requests
-[[ ! -d $HOME/.config/terminator/plugins ]] && mkdir $HOME/.config/terminator/plugins
+[[ ! -d $HOME/.config/terminator/plugins ]] && mkdir -p $HOME/.config/terminator/plugins
 wget https://git.io/v5Zww -O $HOME"/.config/terminator/plugins/terminator-themes.py"
 
