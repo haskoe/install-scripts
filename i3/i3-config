@@ -47,6 +47,9 @@ bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl --min-val=2 -q set 3%-
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl -q set 3%+
+
 # change focus
 #bindsym $mod+j focus left
 #bindsym $mod+k focus down

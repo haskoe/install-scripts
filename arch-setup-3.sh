@@ -41,9 +41,26 @@ colormgr device-add-profile "xrandr-BenQ GW2765-5AE00001019" icc-666e1c8857493a7
 colormgr device-make-profile-default  "xrandr-BenQ GW2765-5AE00001019" icc-666e1c8857493a779957c377b08c44af
 # reboot
 
-
 # terminator theme
 pip install requests
 [[ ! -d $HOME/.config/terminator/plugins ]] && mkdir -p $HOME/.config/terminator/plugins
 wget https://git.io/v5Zww -O $HOME"/.config/terminator/plugins/terminator-themes.py"
 
+# brightness
+# amdgpu
+sudo usermod -aG video $USER
+yay -R xorg-xbacklight 
+yay -S acpilight
+sudo tee -a /etc/udev/rules.d/90-backlight.rules <<-EOF
+SUBSYSTEM=="backlight", ACTION=="add", \
+  RUN+="/usr/bin/chgrp video /sys/class/backlight/amdgpu_bl0/brightness", \
+  RUN+="/usr/bin/chmod g+w /sys/class/backlight/amdgpu_bl0/brightness"
+EOF
+
+# decrease by 30%
+brightnessctl --min-val=2 -q set 30%-
+# increase by 30%
+brightnessctl -q set 30%+
+
+# lightdm startup issue
+sudo perl -pibak -e 's/.logind-check-graphical=.*$/logind-check-graphical=true/' /etc/lightdm/lightdm.conf
