@@ -1,0 +1,32 @@
+# Windows 10 install
+
+# choco
+# From elevated prompt
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+choco install -y hwinfo
+choco install -y vscode
+choco install -y git
+choco install -y googlechrome
+choco install -y notepadplusplus 
+choco install -y visualstudio2019professional
+choco install -y keepass
+choco install -y python3
+choco install -y anydesk
+choco install -y asssd
+choco install -y docker-desktop
+choco install -y hyper
+
+VPN
+Install URL
+Gateway URL
+
+VS2019
+
+WSL2
+iex ((New-Object System.Net.WebClient).DownloadString('https://git.io/JfKrM'))
+
+Hibernate
+powercfg -h off
+
+
