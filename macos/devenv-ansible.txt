@@ -4,12 +4,13 @@ xcode-select --install
 # .zshrc
 PATH=/opt/homebrew/bin:$PATH
 brew update && brew upgrade
-brew install python
+brew install iterm2 python@3.10
 
 sudo pip3 install --upgrade pip
 
 #export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 pip3 install ansible
+ansible --version # libyaml
 
 mkdir -p ~/repos/devenv
 cd ~/repos/devenv
