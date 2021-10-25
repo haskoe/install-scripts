@@ -1,9 +1,14 @@
 xcode-select --install
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# .zshrc
+PATH=/opt/homebrew/bin:$PATH
 brew update && brew upgrade
 brew install python
+
 sudo pip3 install --upgrade pip
-export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+
+#export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 pip3 install ansible
 
 mkdir -p ~/repos/devenv
