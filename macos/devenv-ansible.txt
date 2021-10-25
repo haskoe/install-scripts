@@ -1,0 +1,19 @@
+xcode-select --install
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew update && brew upgrade
+brew install python
+sudo pip3 install --upgrade pip
+export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+pip3 install ansible
+
+mkdir -p ~/repos/devenv
+cd ~/repos/devenv
+git clone https://github.com/geerlingguy/mac-dev-playbook
+cd mac-dev-playbook
+ansible-galaxy install -r requirements.yml
+ansible-playbook main.yml --ask-become-pass
+
+sudo systemsetup -setremotelogin on
+
+# rust 
+curl https://sh.rustup.rs -sSf | sh

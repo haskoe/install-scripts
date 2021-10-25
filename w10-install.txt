@@ -16,6 +16,7 @@ choco install -y anydesk
 choco install -y asssd
 choco install -y docker-desktop
 choco install -y hyper
+choco install -y microsoft-windows-terminal --pre 
 
 VPN
 Install URL
@@ -30,3 +31,6 @@ Hibernate
 powercfg -h off
 
 
+# disable Memory Compression (requires SysMain (service))
+Disable-MMAgent -mc
+Get-Service "SysMain" | Set-Service -StartupType Disabled -PassThru | Stop-Service
