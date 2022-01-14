@@ -1,0 +1,7 @@
+https://dev.to/lucaskuhn/mac-setup-for-a-developer-in-2020-26ak
+https://codeburst.io/my-ultimate-m1-mac-developer-setup-cfdb2daeed2d
+
+rust
+https://www.lpalmieri.com/posts/fast-rust-docker-builds/
+https://benjamincongdon.me/blog/2019/12/04/Fast-Rust-Docker-Builds-with-cargo-vendor/
+cargo-make, cargo-watch, cargo-edit, cargo-audit and cargo-tarpaulin to be useful. I make use of the first two every day. And how about something similar: rusty-hook which totally isn't a cargo plugin but does have some cargo integration by working as a dev-dependency. Although I understand that audit and git-hook support are also offered as part of cargo-checkmate which I am only now discovering thanks to this post.
