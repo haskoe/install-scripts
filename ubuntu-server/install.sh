@@ -88,13 +88,10 @@ sudo ufw allow 443
 docker run -d -p 80:80 -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
 docker run --expose 80 -e VIRTUAL_HOST=dev.humanassist.dyndns.dk --name aspnetcore_sample --rm -it mcr.microsoft.com/dotnet/samples:aspnetapp
 
-# Clone, build and run complexapp, nb! not a aspnet app !!!
+# Clone, build and run aspnetapp
 mkdir -p ~/dev/ms
 cd ~/dev/ms
 git clone https://github.com/dotnet/dotnet-docker.git
-cd dotnet-docker/samples/complexapp/
-docker build -t complexapp .
-docker run --expose 80 -e VIRTUAL_HOST=dev.humanassist.dyndns.dk --name complexapp --rm -it complexapp
-
-
-docker run --expose 80 -e VIRTUAL_HOST=dev.humanassist.dyndns.dk --name aspnetcore_sample --rm -it mcr.microsoft.com/dotnet/samples:complexapp
+cd dotnet-docker/samples/aspnetapp/
+docker build -t aspnetapp .
+docker run --expose 80 -e VIRTUAL_HOST=dev.humanassist.dyndns.dk --name aspnetapp --rm -it aspnetapp
