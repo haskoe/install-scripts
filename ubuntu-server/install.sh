@@ -82,3 +82,19 @@ sudo ufw default deny incoming
 sudo ufw allow OpenSSH
 sudo ufw allow 80
 sudo ufw allow 443
+
+# docker nginx auto ...
+# registrerer nyt dyndns domæne som skal pege på host IP
+docker run -d -p 80:80 -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+docker run --expose 80 -e VIRTUAL_HOST=dev.humanassist.dyndns.dk --name aspnetcore_sample --rm -it mcr.microsoft.com/dotnet/samples:aspnetapp
+
+# Clone, build and run complexapp, nb! not a aspnet app !!!
+mkdir -p ~/dev/ms
+cd ~/dev/ms
+git clone https://github.com/dotnet/dotnet-docker.git
+cd dotnet-docker/samples/complexapp/
+docker build -t complexapp .
+docker run --expose 80 -e VIRTUAL_HOST=dev.humanassist.dyndns.dk --name complexapp --rm -it complexapp
+
+
+docker run --expose 80 -e VIRTUAL_HOST=dev.humanassist.dyndns.dk --name aspnetcore_sample --rm -it mcr.microsoft.com/dotnet/samples:complexapp
