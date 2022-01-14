@@ -1,0 +1,27 @@
+# update store
+Get-CimInstance -Namespace "Root\cimv2\mdm\dmmap" -ClassName "MDM_EnterpriseModernAppManagement_AppManagement01" | Invoke-CimMethod -MethodName UpdateScanMethod
+
+# get product key
+wmic path SoftwareLicensingService get OA3xOriginalProductKey
+
+# update wsl
+wsl --update
+
+# list installed distros 
+wsl -l --all
+
+# list available distros 
+wsl -l --all
+
+# install
+wsl --install -d <name>
+
+# remove
+wsl --unregister <name>
+
+# import export
+wsl --export <distro> <filename.tar>
+wsl --import <distro> <install location> <filename> 
+
+#reboot
+wsl --shutdown
