@@ -37,6 +37,11 @@ sudo apt -y install docker-ce docker-ce-cli containerd.io
 sudo usermod -aG docker $USER
 docker run hello-world
 
+# docker compose
+DEST=/usr/local/bin/docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o $DEST
+sudo chmod +x $DEST
+
 
 # tailscale
 curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.gpg | sudo apt-key add -
