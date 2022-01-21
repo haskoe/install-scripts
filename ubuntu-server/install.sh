@@ -99,4 +99,10 @@ cd ~/dev/ms
 git clone https://github.com/dotnet/dotnet-docker.git
 cd dotnet-docker/samples/aspnetapp/
 docker build -t aspnetapp .
-docker run --expose 80 -e VIRTUAL_HOST=dev.humanassist.dyndns.dk --name aspnetapp --rm -it aspnetapp
+
+
+
+# upload server
+docker run --expose 80 -e VIRTUAL_HOST=upload.humanassist.dyndns.dk --name upload -v $HOME/tmp:/var/root mayth/simple-upload-server -token f9403fc5f537b4ab332d -port 80 /var/root
+
+
