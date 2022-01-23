@@ -1,54 +1,61 @@
+#!/bin/bash
+
+apt -y install emacs-nox curl language-pack-da git build-essential ripgrep bash-completion ca-certificates gnupg lsb-release apt-transport-https ca-certificates software-properties-common tmux tmuxinator
+
+locale-gen da_DK.UTF-8
+locale-gen da_DK
+update-locale 
+update-locale LANG=da_DK.UTF-8
+
+[[ -z "$NEW_HOSTNAME" ]] && echo "NEW_HOSTNAME must be set" && exit 1
+
+# abort if USERNAME is not set
+[[ -z "$USERNAME" ]] && echo "USERNAME must be set" && exit 1
+
 # change hostname
-hostnamectl set-hostname <new hostname>
+hostnamectl set-hostname $NEW_HOSTNAME
+
+# docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt -y update
+apt -y install docker-ce docker-ce-cli containerd.io
+usermod -aG docker $USERNAME
+
+# docker compose
+DEST=/usr/local/bin/docker-compose
+curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o $DEST
+chmod +x $DEST
+
+# tailscale
+curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.gpg | sudo apt-key add -
+curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.list | sudo tee /etc/apt/sources.list.d/tailscale.list
+apt-get -y update
+apt-get -y install tailscale
+tailscale up
 
 # create user and add to group sudo
-adduser %USERNAME%
-usermod -a -G sudo %USERNAME%
+adduser $USERNAME
+usermod -a -G sudo $USERNAME
 
 # change password
-passwd %USERNAME%
+passwd $USERNAME
 
 # sudoers nopasswd
-%USERNAME% ALL=(ALL) NOPASSWD: ALL 
+# %USERNAME% ALL=(ALL) NOPASSWD: ALL 
 
 # passwordless login
-su %USERNAME%
-mkdir ~/.ssh
-chmod 700 ~/.ssh 
+#su $USERNAME
+mkdir /home/${USERNAME}/.ssh
+chmod 700 /home/${USERNAME}/.ssh 
+chown heas /home/${USERNAME}/.ssh 
 
 # on other host
 ssh-copy-id -i ~/.ssh/id_<key name>.pub user@host
 
 # login as new user
-
-# prelim packages
-sudo apt -y install curl language-pack-da git build-essential ripgrep bash-completion ca-certificates gnupg lsb-release apt-transport-https ca-certificates software-properties-common tmux tmuxinator
-
-sudo locale-gen da_DK.UTF-8
-sudo locale-gen da_DK
-sudo update-locale 
-sudo update-locale LANG=da_DK.UTF-8
-
-# docker
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt -y update
-sudo apt -y install docker-ce docker-ce-cli containerd.io
 sudo usermod -aG docker $USER
 docker run hello-world
-
-# docker compose
-DEST=/usr/local/bin/docker-compose
-sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o $DEST
-sudo chmod +x $DEST
-
-
-# tailscale
-curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.gpg | sudo apt-key add -
-curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.list | sudo tee /etc/apt/sources.list.d/tailscale.list
-sudo apt-get -y update
-sudo apt-get -y install tailscale
-sudo tailscale up
 
 # postgres
 sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
