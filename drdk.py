@@ -10,7 +10,7 @@ root_dir = path.join(script_path, 'dr-radio')
 prog_names = ('sa-vidt-vi-ved', 'vildt-naturligt', 'sygt-nok',
               'hammer-og-cilius', 'hjernekassen-pa-p1', 'min-yndlingsmusik')
 
-wget_pattern = '[ ! -f "%s" ] && wget -c --no-check-certificate -O %s "%s"'
+wget_pattern = '[ ! -s "%s" ] && wget -c --no-check-certificate -O %s "%s"'
 for prog_name in prog_names:
     overview_url = f'https://www.dr.dk/mu/feed/{prog_name}.xml?format=podcast'
     r = req.get(overview_url)
