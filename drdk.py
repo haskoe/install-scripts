@@ -7,10 +7,10 @@ import re
 script_path = path.dirname(path.abspath(__file__))
 root_dir = path.join(script_path, 'dr-radio')
 
-prog_names = ('hjernekassen-pa-p1', )
-prog_names = ('min-yndlingsmusik', )
+prog_names = ('sa-vidt-vi-ved', 'vildt-naturligt', 'sygt-nok',
+              'hammer-og-cilius', 'hjernekassen-pa-p1', 'min-yndlingsmusik')
 
-wget_pattern = 'wget -c --no-check-certificate -O %s "%s"'
+wget_pattern = '[ ! -f "%s" ] && wget -c --no-check-certificate -O %s "%s"'
 for prog_name in prog_names:
     overview_url = f'https://www.dr.dk/mu/feed/{prog_name}.xml?format=podcast'
     r = req.get(overview_url)
@@ -26,8 +26,9 @@ for prog_name in prog_names:
         description = item.find('description').text
         url = item.find('enclosure').attrib['url']
 
-        title_stripped = re.sub('\W+', '-', title)
-        dwn.append(wget_pattern % (title_stripped + '.mp3', url))
+        title_stripped = re.sub('\W+', '-', title).lower()
+        mp3_name = title_stripped + '.mp3'
+        dwn.append(wget_pattern % (mp3_name, mp3_name, url))
 
         desc_file = path.join(tgt_dir, title_stripped + '.txt')
         if path.exists(desc_file):
@@ -36,5 +37,6 @@ for prog_name in prog_names:
         with open(desc_file, 'w') as f:
             f.write(description)
 
+    print(tgt_dir)
     with open(path.join(tgt_dir, 'download.sh'), 'w') as f:
-        f.write('\n'.join(dwn))
+        f.write('#!/bin/bash\n' + '\n'.join(dwn))
