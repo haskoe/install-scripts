@@ -42,6 +42,10 @@ makepkg -si
 
 yay -S tigervnc w3m-imgcat gtk2-perl ueberzug mediainfo perl-image-exiftool git-credential-manager-core-bin thunar-archive-plugin xarchiver file-roller
 
+# ranger preview stuff
+yay -S catdoc pandoc mupdf-tools xlsx2csv python-xlsx2csv unrar atool readpst libpst undbx xsel thunar-archive-plugin
+
+
 git-credential-manager-core configure
 git config --global credential.credentialStore secretservice
 

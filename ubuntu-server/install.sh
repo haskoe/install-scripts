@@ -30,8 +30,8 @@ chmod +x $DEST
 # tailscale
 curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.gpg | sudo apt-key add -
 curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.list | sudo tee /etc/apt/sources.list.d/tailscale.list
-apt-get -y update
-apt-get -y install tailscale
+sudo apt-get -y update
+sudo apt-get -y install tailscale
 tailscale up
 
 # create user and add to group sudo
@@ -81,6 +81,7 @@ CONF_FILE=/etc/ssh/sshd_config.d/hardened.conf
 echo PermitRootLogin no | sudo tee $CONF_FILE
 echo PubkeyAuthentication yes | sudo tee -a $CONF_FILE
 echo ChallengeResponseAuthentication no | sudo tee -a $CONF_FILE
+echo PasswordAuthentication no | sudo tee -a $CONF_FILE
 sudo perl -pibak -e 's/^PermitRootLogin/#PermitRootLogin/g' /etc/ssh/sshd_config
 sudo systemctl restart ssh
 
