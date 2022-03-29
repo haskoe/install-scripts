@@ -145,9 +145,9 @@ handle_image() {
             orientation="$( identify -format '%[EXIF:Orientation]\n' -- "${FILE_PATH}" )"
             ## If orientation data is present and the image actually
             ## needs rotating ("1" means no rotation)...
-            TAG_FILE=`python ~/dev/haskoe/install-scripts/file_tagger.py ${FILE_PATH}`
-            RETVAL=$?
-            [[ $RETVAL -ne 1 ]] && code -g ${TAG_FILE}:${RETVAL}
+            #TAG_FILE=`python ~/dev/haskoe/install-scripts/file_tagger.py ${FILE_PATH}`
+            #RETVAL=$?
+            #[[ $RETVAL -ne 1 ]] && code -g ${TAG_FILE}:${RETVAL}
 
             if [[ -n "$orientation" && "$orientation" != 1 ]]; then
                 ## ...auto-rotate the image according to the EXIF data.

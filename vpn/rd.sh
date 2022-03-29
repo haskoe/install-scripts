@@ -9,4 +9,4 @@ SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 [[ -z $KP_PWD ]] && echo "no entry for $userid in pwd database"
 
-xfreerdp  /kbd:0x00000406 /v:$pc /u:${domain}\\${userid} /p:$KP_PWD /f
+xfreerdp  /kbd:0x00000406 /v:$pc /u:${domain}\\${userid} /p:$KP_PWD /f /drive:home,${HOME}/share
