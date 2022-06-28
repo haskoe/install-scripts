@@ -52,5 +52,9 @@ namespace aasted
         public static IEnumerable<string> GetDuplicates(IEnumerable<string> lst) => lst.GroupBy(x => x)
             .Where(g => g.Count() > 1)
             .Select(g => g.Key);
+
+
+        public static IEnumerable<(int index, T value)> Enumerate<T>(IEnumerable<T> coll)
+                    => coll.Select((i, val) => (val, i));
     }
 }

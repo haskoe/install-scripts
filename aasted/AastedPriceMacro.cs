@@ -3,11 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
+using Microsoft.VisualBasic;
 using Microsoft.Office.Interop.Word;
 using W = Microsoft.Office.Interop.Word;
 
 namespace aasted
 {
+    /// <summary>
+    /// AastedPriceMacro indlæser et Word dokument dannet i AZ og efterflg. manuelt redigeret og danner en tabel 
+    /// med en række for hver heading 1 markeret tekst som ineholder 2 kolonner: 1) xref til heading 1 nr og tekst og 2) AastedItemPrice
+    /// Sekvens af "Heading 1" og AastedItemPrice skal være som flg.: "Heading 1", AastedItemPrice, "Heading 1", AastedItemPrice, .....
+    /// Af nedenstående valideringer foretages 1-3. 4 må brugeren selv foretage
+    /// 1) Heading 1 uden en afsluttende AastedItemPrice
+    /// 2) AastedItemPrice uden en foregående Heading 1
+    /// 3) Advarsel hvis Heading 1 tekster ikke er unkke
+    /// 4) Heading 1 numre skal være fortløbende 
+    /// 
+    /// Koden gør flg.:
+    /// 1) Dokument kopieres og kopi åbnes
+    /// 2) Alle Heading 1 xref'er indlæses i _heading1PriceXrefs da det er xref'en som indsættes i pristabellen
+    /// 3) Alle Heading 1 positioner og tekster indlæses i _heading1PriceTextAndPos
+    /// 4) Alle aastedItemPrice positioner og tekster indlæses i _aastedPrices
+    /// 5) Validering 1-3 foretages og valideringsfejl gemmes i _validationErrors
+    /// 6) Alle rækker med undtagelse af den første cleares i pristabel (er markeret med AastedItemHeading)
+    /// 7) Der indsættes en række for hver heading 1 i pristabel (InsertPriceInToc)
+    /// 8) TOC opdateres
+    /// </summary>
     public class AastedPriceMacro
     {
         private W._Document _doc;
@@ -30,6 +51,7 @@ namespace aasted
 
         private const string DOT = ".";
         private const char TAB = '\t';
+        private const string PriceXrefSep = ".\t";
 
         private const string PriceUnit = "EUR"; // todo: extract from aasted item price
         private const string AastedItemHeadingStyleName = "AastedItemHeading";
@@ -118,58 +140,64 @@ namespace aasted
                 _heading1ToAastedPrice.Add(key, aastedPrice?.Text.Split(TAB).Last().Trim() ?? "");
             }
 
-            // validation 0: duplicate xrefs
-            AddError("Dublerede pris krydsreferencer", _heading1PriceXrefs
-                .Where(xref => xref.Value.Length > 1)
-                .Select(xref => xref.Value.First().Item2)
-                .ToArray());
-
-            // validation 1: All price xref texts must have an associated Heading 1 text
+            // validation 1: Duplicate heading 1 texts
             _heading1Dict = _heading1PriceTextAndPos
                 .GroupBy(x => Helper.RemoveWhiteSpace(x.Text))
                 .ToDictionary(g => g.Key, g => g.ToArray());
 
-            AddError("Alle pris krydsreferencer skal have en tilhørende heading 1 tekst", _heading1PriceXrefs
-                .Where(xref => !_heading1Dict.ContainsKey(xref.Key))
-                .Select(xref => xref.Value.First().Item2)
-                .ToArray());
-
-            // validation 2: All heading 1 price texts must be unique
-            AddError("Alle Heading 1 pris tekster skal være unikke", _heading1Dict
+            AddError("Dublerede Heading 1 tekster", _heading1Dict
                 .Where(x => x.Value.Length > 1)
-                .Select(x => x.Key)
+                .Select(x => x.Value.First().Text)
                 .ToArray());
 
-            // validation 3: Heading 1 price text and AastedItemPrice price text count must match
-            if (_heading1Dict.Count != _aastedPrices.Length)
+
+            // Regel: der skal være en efterflg. AastedItemPrice OG en efterflg Heading 1 skal ligge efter efterflg. AastedItemPrice
+            AddError("Heading 1 som mangler en AastedItemPrice", _heading1PriceTextAndPos
+                .Select(enu => new Tuple<StyleTextAndPos, StyleTextAndPos, StyleTextAndPos>(
+                    _heading1PriceTextAndPos.FirstOrDefault(hpp => hpp.Pos > enu.Pos),
+                    _aastedPrices.FirstOrDefault(app => app.Pos > enu.Pos),
+                    enu
+                ))
+                .Where(t => !(null != t.Item2 && (null == t.Item1 || t.Item1.Pos> t.Item2.Pos)))
+                .Select(t => t.Item3.Text)
+                .ToArray());
+
+            // Regel: der skal være en efterflg. AastedItemPrice OG en efterflg Heading 1 skal ligge efter efterflg. AastedItemPrice
+            AddError("AastedItemPrice som mangler foregående Heading 1", _aastedPrices
+                .Select(enu => new Tuple<StyleTextAndPos, StyleTextAndPos, StyleTextAndPos>(
+                    _aastedPrices.LastOrDefault(app => app.Pos < enu.Pos),
+                    _heading1PriceTextAndPos.LastOrDefault(hpp => hpp.Pos < enu.Pos),
+                    enu
+                ))
+                .Where(t => !(null != t.Item2 && (null == t.Item1 || t.Item1.Pos < t.Item2.Pos)))
+                .Select(t => t.Item3.Text)
+                .ToArray());
+
+            // insert validation errors
+            if (_validationErrors.Any())
             {
-                AddError("Antal Heading 1 priser og AastedItemPrice priser skal være det samme", new string[] { $"Heading 1 antal:{_heading1Dict.Count} AastedItemPrice antal:{_aastedPrices.Length}" });
-            }
-            else
-            {
-                AddError("Antal Heading 1 pris positioner og AastedItemPrice pris positioner i dokumentet følger ikke hinanden", Enumerable.Range(0, _heading1PriceTextAndPos.Length)
-                    .Where(i => (_heading1PriceTextAndPos[i].Pos >= _aastedPrices[i].Pos)
-                                ||
-                                ((i < _heading1PriceTextAndPos.Length - 1) && (_aastedPrices[i].Pos >= _heading1PriceTextAndPos[i + 1].Pos)))
-                    .Select(i => $"{_heading1PriceTextAndPos[i].Text} {_aastedPrices[i].Text}")
-                    .ToArray());
+                string txt = string.Join(Environment.NewLine, _validationErrors
+                    .Select(kv => $"{kv.Key}:{Environment.NewLine}{string.Join(Environment.NewLine, kv.Value)}"));
+
+                //MoveToPriceTable();
+                //_app.Selection.MoveUp(WdUnits.wdLine, ref objMoveCount, WdMovementType.wdMove);
+                //_app.Selection.MoveUp(WdUnits.wdLine, ref objMoveCount, WdMovementType.wdMove);
+                //_app.Selection.Text = txt;
             }
         }
 
 
         private void ClearTocPriceTable()
         {
-            if (MoveToPriceToc())
+            if (MoveToPriceTable())
             {
                 W.Table tbl = _app.Selection.Tables[1]; // Selection.Tables has start offset one
-                while (tbl.Rows.Count > 2)
+                while (tbl.Rows.Count > 1)
                 {
                     tbl.Rows[tbl.Rows.Count].Delete();
                 }
                 SetCell(tbl, 1, 1, "ITEM", _aastedItemHeadingStyle); // Cell array has start offset zero ...???
                 SetCell(tbl, 1, 2, PriceUnit, _aastedItemPriceStyle);
-                SetCell(tbl, 2, 1, "", null);
-                SetCell(tbl, 2, 2, "", null);
             }
             else
             {
@@ -181,13 +209,13 @@ namespace aasted
         private void InsertPriceInToc()
         {
             // Alle Aasted priser indsættes hvis der er en xref til denne
-            if (MoveToPriceToc())
+            if (MoveToPriceTable())
             {
                 int row = 2;
                 var tbl = _app.Selection.Tables[1];
                 foreach (var price in _heading1PriceTextAndPos)
                 {
-                    var rng = SelectCell(tbl, row, 1);
+                    Selection rng = _app.Selection;
                     rng.set_Style(_aastedItemStyle);
 
                     // if there is a xref mathing the heading 1 price insert that
@@ -196,11 +224,11 @@ namespace aasted
                     {
                         var headingXref = _heading1PriceXrefs[Helper.RemoveWhiteSpace(price.Text)]
                             .First();
-                        object xrefIdx = headingXref.Item1;
+                        object xrefIdx = (headingXref.Item1 + 1);
                         rng.InsertCrossReference(WdReferenceType.wdRefTypeHeading,
                             WdReferenceKind.wdNumberFullContext, xrefIdx, ref objTrue, ref objFalse);
                         rng.Collapse(WdCollapseDirection.wdCollapseStart);
-                        rng.InsertBefore(@".\t");
+                        rng.InsertBefore(PriceXrefSep);
                         rng.Collapse(WdCollapseDirection.wdCollapseEnd);
                         rng.InsertCrossReference(WdReferenceType.wdRefTypeHeading,
                             WdReferenceKind.wdContentText, xrefIdx, ref objTrue, ref objFalse);
@@ -209,23 +237,27 @@ namespace aasted
                     {
                         rng.Text = price.Text;
                     }
-                    rng = SelectCell(tbl, row, 2);
+                    rng.MoveRight(WdUnits.wdCell);
                     rng.set_Style(_aastedPriceStyle);
                     rng.Text = _heading1ToAastedPrice[Helper.RemoveWhiteSpace(price.Text)];
 
                     tbl.Rows.Add();
+                    rng.MoveRight(WdUnits.wdCell);
                     //_app.Selection.MoveDown(WdUnits.wdLine, ref objMoveCount, WdMovementType.wdExtend);
                     row += 1;
                 }
             }
         }
 
-        private bool MoveToPriceToc()
+        private bool MoveToPriceTable()
         {
             InitSelectionFind(_aastedItemHeadingStyle, true);
             bool result = _app.Selection.Find.Execute();
             if (result)
             {
+                var tbl = _app.Selection.Tables[1];
+                if (tbl.Rows.Count == 1)
+                    tbl.Rows.Add();
                 _app.Selection.MoveDown(WdUnits.wdLine, ref objMoveCount, WdMovementType.wdMove);
             }
             return result;
