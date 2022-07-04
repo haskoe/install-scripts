@@ -1,19 +1,23 @@
 ﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace aasted
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
-            string wordFile = Environment.ExpandEnvironmentVariables(Path.Combine("%USERPROFILE%", "Downloads", "t.doc"));
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
 
-            var doc = new AastedPriceMacro(wordFile);
+            //var mgr = new MainFormManager();
+            //mgr.Refresh();
+
+            //string wordFile = Environment.ExpandEnvironmentVariables(Path.Combine("%USERPROFILE%", "Downloads", "t.doc"));
+
+            //var doc = new AastedPriceMacro(wordFile, null);
         }
     }
 }

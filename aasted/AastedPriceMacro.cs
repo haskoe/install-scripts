@@ -62,23 +62,21 @@ namespace aasted
         private const string AastedItemPriceStyleName = "AastedItemPrice";
 
         private Dictionary<string, string> _validationErrors = new Dictionary<string, string>();
+        public string ValidationErrors => string.Join(Environment.NewLine, _validationErrors
+            .Select(kv => $"{kv.Key}:{Environment.NewLine}{string.Join(Environment.NewLine, kv.Value)}{Environment.NewLine}"));
 
-        public AastedPriceMacro(string wordFile)
+        public AastedPriceMacro(string docFileName, string workFileName)
         {
-            // make a copy 
-            string workFile = Path.Combine(Path.GetDirectoryName(wordFile), $"{Path.GetFileNameWithoutExtension(wordFile)}-{DateTime.Now.ToString("yyyyMMddHHmmss")}{Path.GetExtension(wordFile)}");
-            File.Copy(wordFile, workFile);
+            File.Copy(docFileName, workFileName);
             object read = "ReadWrite";
             object readOnly = false;
             object o = MISSING;
-            object filePath = workFile;
+            object filePath = workFileName;
 
             _app = new Microsoft.Office.Interop.Word.Application();
             try
             {
                 _doc = _app.Documents.Open(ref filePath, ref o, ref readOnly, ref o, ref o, ref o, ref o, ref o, ref o, ref o, ref o, ref o, ref o, ref o, ref o, ref o);
-
-                //_styles = ToArray<W.Style>(() => _doc.Styles.Count, (i) => _doc.Styles[i + 1]);
 
                 _heading1Style = GetHeadingStyle(1);
                 _aastedItemHeadingStyle = GetStyle(AastedItemHeadingStyleName);
@@ -174,15 +172,12 @@ namespace aasted
                 .ToArray());
 
             // insert validation errors
-            if (_validationErrors.Any())
+            if (ValidationErrors.Any())
             {
-                string txt = string.Join(Environment.NewLine, _validationErrors
-                    .Select(kv => $"{kv.Key}:{Environment.NewLine}{string.Join(Environment.NewLine, kv.Value)}"));
-
                 //MoveToPriceTable();
                 //_app.Selection.MoveUp(WdUnits.wdLine, ref objMoveCount, WdMovementType.wdMove);
                 //_app.Selection.MoveUp(WdUnits.wdLine, ref objMoveCount, WdMovementType.wdMove);
-                //_app.Selection.Text = txt;
+                //_app.Selection.Text = ValidationErrors;
             }
         }
 
