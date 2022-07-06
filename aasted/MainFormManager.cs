@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Windows.Forms;
 
 namespace aasted
 {
@@ -29,7 +31,9 @@ namespace aasted
 
         public void Refresh()
         {
-            //_docDirectories = new string[] { };
+            _docDirectories = Properties.Settings.Default.DocDirectories
+                .Cast<string>()
+                .ToArray();
 
             //if (File.Exists(AppStateFileName))
             //    _docDirectories = File.ReadAllLines(AppStateFileName)
@@ -51,8 +55,9 @@ namespace aasted
 
         private void ProcessFile(string docFileName)
         {
+            AddToDocDirectories(docFileName);
             CurrentSourceFileName = docFileName;
-            CurrentWorkFileName = AastedHelper.ProcessedDocFileName(docFileName, TempDir);
+            CurrentWorkFileName = AastedHelper.ProcessedDocFileName(docFileName, TempDir(docFileName));
 
             _macro = new AastedPriceMacro(CurrentSourceFileName, CurrentWorkFileName);
         }
@@ -62,18 +67,30 @@ namespace aasted
             string directoryPart = Path.GetDirectoryName(docFileName);
             if (!_docDirectories.Any(docDir => docDir.Equals(directoryPart, StringComparison.CurrentCultureIgnoreCase)))
             {
+                try
+                {
+                    // create temp and output directories
+                    TempDir(directoryPart);
+                    OutputDir(directoryPart);
+                }
+                catch (Exception ex)
+                {
+                    throw new ApplicationException(string.Format("Could not create temp and output directories under {0}", 
+                }
+
                 _docDirectories = _docDirectories
                     .ToList()
                     .Append(directoryPart)
                     .ToArray();
 
-                File.WriteAllLines(AppStateFileName, _docDirectories);
-                Refresh();
+                Properties.Settings.Default.DocDirectories = new System.Collections.Specialized.StringCollection();
+                Properties.Settings.Default.DocDirectories.AddRange(_docDirectories);
             }
         }
 
         private int PostFixStart(string docFileName) => Helper.RegExMatchStart(DATEFORMAT_POSTFIX_REGEX, docFileName);
         private string BatchDir => Helper.CreateDirectoryIfNotExists(AppDirectory, "batch");
-        private string TempDir => Helper.CreateDirectoryIfNotExists(AppDirectory, "temp");
+        private string TempDir(string docFileName) => Helper.CreateDirectoryIfNotExists(Path.GetDirectoryName(docFileName), Properties.Settings.Default.TempDirName);
+        private string OutputDir(string docFileName) => Helper.CreateDirectoryIfNotExists(Path.GetDirectoryName(docFileName), Properties.Settings.Default.OutputDirName);
     }
 }
