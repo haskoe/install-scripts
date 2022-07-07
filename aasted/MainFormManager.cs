@@ -13,84 +13,88 @@ namespace aasted
         private static Regex DATEFORMAT_POSTFIX_REGEX = new Regex(string.Format(@"-\d{{{0}}}\.", AastedHelper.DATEFORMAT_POSTFIX.Length));
         public bool IsProcessed(string docFileName) => PostFixStart(docFileName) > 0;
 
-        private const string APPSTATE_FILE = "appstate.txt";
-        private string AppStateFileName => Path.Combine(AppDirectory, APPSTATE_FILE);
-
         public string AppDirectory { get; private set; }
-        public string CurrentSourceFileName { get; private set; }
-        public string CurrentWorkFileName { get; private set; }
-        public string ValidationErrors => _macro?.ValidationErrors ?? "";
 
-        private string[] _docDirectories;
+        public string ValidationErrors => _macro?.ValidationErrors ?? "";
+        public bool ValidDocument => string.IsNullOrEmpty(ValidationErrors);
+
+        public bool CanOverwrite { get; private set; }
+
         private AastedPriceMacro _macro;
+        private string _currentWorkFileName;
+        private string _docFileName;
 
         public MainFormManager()
         {
             AppDirectory = AppDomain.CurrentDomain.BaseDirectory;
         }
 
-        public void Refresh()
+        public string TryProcessLatestFile()
         {
-            _docDirectories = Properties.Settings.Default.DocDirectories
-                .Cast<string>()
+            CanOverwrite = false;
+            string result = null;   
+            string docDir = Properties.Settings.Default.DocDirName;
+            var recentDocuments = Directory.EnumerateFiles(Environment.GetFolderPath(Environment.SpecialFolder.Recent))
+                .Where(sc => sc.Split('.').Length > 2 && sc.Split('.').Last().Equals("lnk", StringComparison.CurrentCultureIgnoreCase) && sc.Split('.')[sc.Split('.').Length - 2].Equals("doc", StringComparison.CurrentCultureIgnoreCase))
+                .Select(sc => Helper.GetShortcutTargetFile(sc))
                 .ToArray();
+            var lastAccessedFiles = recentDocuments
+                .Where(f => Path.GetDirectoryName(f).Equals(docDir, StringComparison.CurrentCultureIgnoreCase))
+                .OrderByDescending(f => File.GetLastWriteTime(f))
+                .ToArray();
+            
+            if (!lastAccessedFiles.Any())
+                ThrowError(Properties.Settings.Default.ErrorMessageNoDocs + " " + docDir);
 
-            //if (File.Exists(AppStateFileName))
-            //    _docDirectories = File.ReadAllLines(AppStateFileName)
-            //        .Where(docDir => Directory.Exists(docDir))
-            //        .ToArray();
-
-            //string docFileName = @"c:\a\b\c\d\e.doc";
-            //var isProcessed = IsProcessed(docFileName);
-            //string processedDocFileName = AastedHelper.ProcessedDocFileName(docFileName, TempDir);
-            //isProcessed = IsProcessed(processedDocFileName);
-            CurrentSourceFileName = "";
-            CurrentWorkFileName = "";
-        }
-
-        public void FileSelected(string docFileName)
-        {
-            ProcessFile(docFileName);
-        }
-
-        private void ProcessFile(string docFileName)
-        {
-            AddToDocDirectories(docFileName);
-            CurrentSourceFileName = docFileName;
-            CurrentWorkFileName = AastedHelper.ProcessedDocFileName(docFileName, TempDir(docFileName));
-
-            _macro = new AastedPriceMacro(CurrentSourceFileName, CurrentWorkFileName);
-        }
-
-        private void AddToDocDirectories(string docFileName)
-        {
-            string directoryPart = Path.GetDirectoryName(docFileName);
-            if (!_docDirectories.Any(docDir => docDir.Equals(directoryPart, StringComparison.CurrentCultureIgnoreCase)))
+            _docFileName = lastAccessedFiles.First();
+            try
             {
-                try
+                var fileInfo = new FileInfo(_docFileName);
+                using (FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None))
                 {
-                    // create temp and output directories
-                    TempDir(directoryPart);
-                    OutputDir(directoryPart);
                 }
-                catch (Exception ex)
-                {
-                    throw new ApplicationException(string.Format("Could not create temp and output directories under {0}", 
-                }
-
-                _docDirectories = _docDirectories
-                    .ToList()
-                    .Append(directoryPart)
-                    .ToArray();
-
-                Properties.Settings.Default.DocDirectories = new System.Collections.Specialized.StringCollection();
-                Properties.Settings.Default.DocDirectories.AddRange(_docDirectories);
             }
+            catch (Exception ex)
+            {
+                ThrowError(Properties.Settings.Default.ErrorMessageCouldNotOpenDoc + " " + _docFileName);
+            }
+
+            _currentWorkFileName = AastedHelper.ProcessedDocFileName(_docFileName, TempDir(_docFileName));
+            try
+            {
+                _macro = new AastedPriceMacro(_docFileName, _currentWorkFileName);
+                CanOverwrite = true;
+                if (ValidDocument)
+                {
+                    Overwrite();
+                    result = _docFileName;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ThrowError(Properties.Settings.Default.ErrorMessageCouldNotOpenDoc + " " + _docFileName);
+            }
+
+            return result;
+        }
+
+        public string Overwrite()
+        {
+            if (!CanOverwrite)
+                throw new ApplicationException("Overwrite called but cannot overwrite");
+
+            File.Copy(_currentWorkFileName, _docFileName);
+            File.Delete(_currentWorkFileName);
+            return _docFileName;
+        }
+        private void ThrowError(string errorMessage)
+        {
+            throw new ApplicationException(errorMessage);
         }
 
         private int PostFixStart(string docFileName) => Helper.RegExMatchStart(DATEFORMAT_POSTFIX_REGEX, docFileName);
         private string BatchDir => Helper.CreateDirectoryIfNotExists(AppDirectory, "batch");
-        private string TempDir(string docFileName) => Helper.CreateDirectoryIfNotExists(Path.GetDirectoryName(docFileName), Properties.Settings.Default.TempDirName);
-        private string OutputDir(string docFileName) => Helper.CreateDirectoryIfNotExists(Path.GetDirectoryName(docFileName), Properties.Settings.Default.OutputDirName);
+        private string TempDir(string docFileName) => Helper.CreateDirectoryIfNotExists(Path.GetDirectoryName(docFileName), Properties.Settings.Default.TempSubDirName);
     }
 }

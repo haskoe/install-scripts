@@ -62,8 +62,8 @@ namespace aasted
         private const string AastedItemPriceStyleName = "AastedItemPrice";
 
         private Dictionary<string, string> _validationErrors = new Dictionary<string, string>();
-        public string ValidationErrors => string.Join(Environment.NewLine, _validationErrors
-            .Select(kv => $"{kv.Key}:{Environment.NewLine}{string.Join(Environment.NewLine, kv.Value)}{Environment.NewLine}"));
+        public string ValidationErrors => string.Join("<p/>", _validationErrors
+            .Select(kv => $"<b>{kv.Key}</b><br/>{string.Join("<br/>", kv.Value)}"));
 
         public AastedPriceMacro(string docFileName, string workFileName)
         {
@@ -191,8 +191,8 @@ namespace aasted
                 {
                     tbl.Rows[tbl.Rows.Count].Delete();
                 }
-                SetCell(tbl, 1, 1, "ITEM", _aastedItemHeadingStyle); // Cell array has start offset zero ...???
-                SetCell(tbl, 1, 2, PriceUnit, _aastedItemPriceStyle);
+                SetCell(tbl, 1, 1, "ITEM", _aastedItemHeadingStyle);
+                SetCell(tbl, 1, 2, PriceUnit, _aastedPriceHeadingStyle);
             }
             else
             {
@@ -268,7 +268,7 @@ namespace aasted
         {
             if (errorItems.Any())
             {
-                _validationErrors.Add(errorText, string.Join(Environment.NewLine, errorItems));
+                _validationErrors.Add(errorText, string.Join("<br/>", errorItems));
             }
         }
         private void AddError(string errorText, string errorItem)
@@ -342,18 +342,19 @@ namespace aasted
 
         private string GetSelectionText() => _app.Selection.Text.Trim();
 
-        private IEnumerable<T> StyleFindGet<T>(W.Style style, bool skipEmpty, Func<T> getItem)
+        private IEnumerable<T> StyleFindGet<T>(W.Style style, bool skipEmpty, Func<T> getItem, Func<T,int> dupKeyFunc = null)
         {
             InitSelectionFind(style, true);
             return LinqHelper.ToEnumerable<string, T>(
                 () => _app.Selection.Find.Execute(),
                 GetSelectionText,
                 getItem,
-                (t) => !skipEmpty || !string.IsNullOrEmpty(t));
+                (t) => !skipEmpty || !string.IsNullOrEmpty(t),
+                dupKeyFunc);
         }
 
         public StyleTextAndPos SelectionToStyleTextAndPos() => StyleTextAndPos.FromSelection(_app.Selection);
-        private IEnumerable<StyleTextAndPos> StyleFindGetTextAndPos(W.Style style, bool skipEmpty) => StyleFindGet<StyleTextAndPos>(style, skipEmpty, SelectionToStyleTextAndPos);
+        private IEnumerable<StyleTextAndPos> StyleFindGetTextAndPos(W.Style style, bool skipEmpty) => StyleFindGet<StyleTextAndPos>(style, skipEmpty, SelectionToStyleTextAndPos, (item) => item.Pos);
         private W.Style GetHeadingStyle(int headingIndex) => GetStyle(HEADING_STYLE_NAMES.Select(sn => $"{sn} {headingIndex}"));
 
     }

@@ -12,62 +12,85 @@ namespace aasted
 {
     public partial class MainForm : Form
     {
+        private enum eState
+        {
+            NoDocumentSelected = 2,
+            SelectedDocumentInvalid = 3,
+            SelectedDocumentValid = 4
+        }
+
         private MainFormManager _MainFormManager;
+        private eState _state;
+
 
         public MainForm()
         {
             InitializeComponent();
         }
 
-        private void Refresh()
-        {
-            _MainFormManager.Refresh();
-        }
-
-        private void SetState()
-        {
-        }
-
         private void MainForm_Shown(object sender, EventArgs e)
         {
+            Go();
+        }
+
+        private void MainForm_Activated(object sender, EventArgs e)
+        {
+        }
+
+        private void Go()
+        {
+            pbOverWrite.Enabled = false;
+            pbClose.Enabled = false;
             _MainFormManager = new MainFormManager();
-            Refresh();
+            try
+            {
+                SetDocumentText("Processing file. Please wait");
+                Application.DoEvents();
+                Cursor.Current = Cursors.WaitCursor;
+                string resultingFile = _MainFormManager.TryProcessLatestFile();
+                SetDocumentText(_MainFormManager.ValidationErrors);
+                //Application.DoEvents();
+                if (!string.IsNullOrEmpty(resultingFile))
+                    System.Diagnostics.Process.Start(resultingFile);
+
+
+            }
+            catch (Exception ex)
+            {
+                SetDocumentText(ex.Message);
+            }
+            finally
+            {
+                pbOverWrite.Enabled = !_MainFormManager.ValidDocument;
+                pbClose.Enabled = true;
+                Cursor.Current = Cursors.Default;
+            }
         }
 
-        private void pbOpen_Click(object sender, EventArgs e)
+        private void SetDocumentText(string txt)
         {
-            if (string.IsNullOrEmpty(_MainFormManager.CurrentWorkFileName))
-                return;
-
-            System.Diagnostics.Process.Start(_MainFormManager.CurrentWorkFileName);
+            webBrowser1.Navigate("about:blank");
+            webBrowser1.Document.OpenNew(false);
+            webBrowser1.Document.Write(txt);
+            webBrowser1.Refresh();
         }
 
-        private void pbSelect_Click(object sender, EventArgs e)
+        private void pbOverWrite_Click(object sender, EventArgs e)
         {
-            string resultingFileName = "";
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            try
             {
-                openFileDialog.InitialDirectory = _MainFormManager.AppDirectory;
-                openFileDialog.Filter = "Word files (*.doc)|*.doc";
+                System.Diagnostics.Process.Start(_MainFormManager.Overwrite());
 
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                    resultingFileName = openFileDialog.FileName;
             }
-
-            if (!string.IsNullOrEmpty(resultingFileName))
+            catch (Exception ex)
             {
-                try
-                {
-                    Cursor.Current = Cursors.WaitCursor;
-                    _MainFormManager.FileSelected(resultingFileName);
-                    tbDocFileName.Text = resultingFileName;
-                    tbValidationErrors.Text = _MainFormManager.ValidationErrors;
-                }
-                finally
-                {
-                    Cursor.Current = Cursors.Default;
-                }
+                SetDocumentText(ex.Message);
             }
+        }
+
+        private void pbClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

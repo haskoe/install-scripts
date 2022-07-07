@@ -30,9 +30,9 @@ namespace aasted
         public static IEnumerable<T> ToEnumerable<T>(Func<int> getCount, Func<int, T> getItem) => Enumerable.Range(0, getCount())
             .Select(i => getItem(i));
 
-        public static IEnumerable<T2> ToEnumerable<T1, T2>(Func<bool> continueFunc, Func<T1> getT1, Func<T2> getT2, Func<T1, bool> addCond = null, int limit = -1)
+        public static IEnumerable<T2> ToEnumerable<T1, T2>(Func<bool> continueFunc, Func<T1> getT1, Func<T2> getT2, Func<T1, bool> addCond = null, Func<T2,int> dupKeyFunc = null)
         {
-            int count = 0;
+            HashSet<int> dupKeys = new HashSet<int>();
             bool doContinue = continueFunc();
             while (doContinue)
             {
@@ -41,9 +41,14 @@ namespace aasted
                 {
                     T2 item = getT2();
                     yield return item;
-                    count += 1;
-                    if (limit > 0 && count > limit)
-                        throw new ApplicationException($"ToEnumerable: Limit exceeded. Limit:{limit}, item:{item.ToString()}");
+                    if (null != dupKeyFunc)
+                    {
+                        int dupKey = dupKeyFunc(item);
+                        if (!dupKeys.Contains(dupKey))
+                            dupKeys.Add(dupKey);
+                        else
+                            break;
+                    }
                 }
                 doContinue = continueFunc();
             }
