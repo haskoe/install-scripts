@@ -44,5 +44,16 @@ namespace aasted
 
             return string.Empty;
         }
+
+        public static bool IsShortcutLink(string shortcut, string extension)
+        {
+            string[] temp = shortcut.Split('.');
+            return
+                temp.Length > 2
+                &&
+                temp.Last().Equals("lnk", StringComparison.CurrentCultureIgnoreCase)
+                &&
+                temp[temp.Length - 2].Equals(extension, StringComparison.CurrentCultureIgnoreCase);
+        }
     }
 }

@@ -32,17 +32,17 @@ namespace aasted
         public string TryProcessLatestFile()
         {
             CanOverwrite = false;
-            string result = null;   
+            string result = null;
             string docDir = Properties.Settings.Default.DocDirName;
             var recentDocuments = Directory.EnumerateFiles(Environment.GetFolderPath(Environment.SpecialFolder.Recent))
-                .Where(sc => sc.Split('.').Length > 2 && sc.Split('.').Last().Equals("lnk", StringComparison.CurrentCultureIgnoreCase) && sc.Split('.')[sc.Split('.').Length - 2].Equals("doc", StringComparison.CurrentCultureIgnoreCase))
+                .Where(sc => Helper.IsShortcutLink(sc, "doc"))
                 .Select(sc => Helper.GetShortcutTargetFile(sc))
                 .ToArray();
             var lastAccessedFiles = recentDocuments
                 .Where(f => Path.GetDirectoryName(f).Equals(docDir, StringComparison.CurrentCultureIgnoreCase))
                 .OrderByDescending(f => File.GetLastWriteTime(f))
                 .ToArray();
-            
+
             if (!lastAccessedFiles.Any())
                 ThrowError(Properties.Settings.Default.ErrorMessageNoDocs + " " + docDir);
 
@@ -88,6 +88,7 @@ namespace aasted
             File.Delete(_currentWorkFileName);
             return _docFileName;
         }
+
         private void ThrowError(string errorMessage)
         {
             throw new ApplicationException(errorMessage);
