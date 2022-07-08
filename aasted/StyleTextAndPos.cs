@@ -10,7 +10,7 @@ namespace aasted
         private StyleTextAndPos(int pos, string text) 
         {
             Pos = pos;
-            Text = text;
+            Text = text.Trim();
         }
 
         public static StyleTextAndPos New(int pos, string text) => new StyleTextAndPos(pos, text);

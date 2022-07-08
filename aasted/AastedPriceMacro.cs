@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-using Microsoft.VisualBasic;
 using Microsoft.Office.Interop.Word;
 using W = Microsoft.Office.Interop.Word;
+using Res = aasted.Properties.Resources;
 
 namespace aasted
 {
@@ -47,10 +47,9 @@ namespace aasted
         private StyleTextAndPos[] _heading1PriceTextAndPos;
 
         private Dictionary<string, StyleTextAndPos[]> _heading1Dict = new Dictionary<string, StyleTextAndPos[]>();
-        private Dictionary<string, string> _heading1ToAastedPrice = new Dictionary<string, string>();
+        private Dictionary<int, string> _heading1PosToAastedPrice = new Dictionary<int, string>();
 
         private const string DOT = ".";
-        private const char TAB = '\t';
         private const string PriceXrefSep = ".\t";
 
         private const string PriceUnit = "EUR"; // todo: extract from aasted item price
@@ -127,15 +126,19 @@ namespace aasted
             _aastedPrices = StyleFindGetTextAndPos(_aastedItemPriceStyle, true)
                .ToArray();
 
+            AddError(Res.ErrorInvalidAastedItemPrice, _aastedPrices
+                .Where(aap => !AastedHelper.ValidAastedItemPrice(aap.Text))
+                .Select(aap => aap.Text)
+                .ToArray());
+
+
             foreach (int i in Enumerable.Range(0, _heading1PriceTextAndPos.Length))
             {
-                string key = Helper.RemoveWhiteSpace(_heading1PriceTextAndPos[i].Text);
-                if (_heading1ToAastedPrice.ContainsKey(key))
-                    continue;
+                var heading1PriceTextAndPos = _heading1PriceTextAndPos[i];
 
                 var aastedPrice = _aastedPrices
-                    .FirstOrDefault(aap => (aap.Pos > _heading1PriceTextAndPos[i].Pos) && (i == _heading1PriceTextAndPos.Length - 1 || aap.Pos < _heading1PriceTextAndPos[i + 1].Pos));
-                _heading1ToAastedPrice.Add(key, aastedPrice?.Text.Split(TAB).Last().Trim() ?? "");
+                    .FirstOrDefault(aap => (aap.Pos > heading1PriceTextAndPos.Pos) && (i == _heading1PriceTextAndPos.Length - 1 || aap.Pos < _heading1PriceTextAndPos[i + 1].Pos));
+                _heading1PosToAastedPrice.Add(heading1PriceTextAndPos.Pos, AastedHelper.GetPriceFromAastedItemPrice(aastedPrice?.Text ?? ""));
             }
 
             // validation 1: Duplicate heading 1 texts
@@ -143,14 +146,14 @@ namespace aasted
                 .GroupBy(x => Helper.RemoveWhiteSpace(x.Text))
                 .ToDictionary(g => g.Key, g => g.ToArray());
 
-            AddError("Dublerede Heading 1 tekster", _heading1Dict
+            AddError(Res.ErrorHeading1Duplicates, _heading1Dict
                 .Where(x => x.Value.Length > 1)
                 .Select(x => x.Value.First().Text)
                 .ToArray());
 
 
             // Regel: der skal være en efterflg. AastedItemPrice OG en efterflg Heading 1 skal ligge efter efterflg. AastedItemPrice
-            AddError("Heading 1 som mangler en AastedItemPrice", _heading1PriceTextAndPos
+            AddError(Res.ErrorHeading1WithoutAastedItemPrice, _heading1PriceTextAndPos
                 .Select(enu => new Tuple<StyleTextAndPos, StyleTextAndPos, StyleTextAndPos>(
                     _heading1PriceTextAndPos.FirstOrDefault(hpp => hpp.Pos > enu.Pos),
                     _aastedPrices.FirstOrDefault(app => app.Pos > enu.Pos),
@@ -160,8 +163,8 @@ namespace aasted
                 .Select(t => t.Item3.Text)
                 .ToArray());
 
-            // Regel: der skal være en efterflg. AastedItemPrice OG en efterflg Heading 1 skal ligge efter efterflg. AastedItemPrice
-            AddError("AastedItemPrice som mangler foregående Heading 1", _aastedPrices
+            // Regel: AastedItemPrice skal have en foregående Heading 1
+            AddError(Res.ErrorAastedItemPriceWithoutPrecedingHeading1, _aastedPrices
                 .Select(enu => new Tuple<StyleTextAndPos, StyleTextAndPos, StyleTextAndPos>(
                     _aastedPrices.LastOrDefault(app => app.Pos < enu.Pos),
                     _heading1PriceTextAndPos.LastOrDefault(hpp => hpp.Pos < enu.Pos),
@@ -180,7 +183,6 @@ namespace aasted
                 //_app.Selection.Text = ValidationErrors;
             }
         }
-
 
         private void ClearTocPriceTable()
         {
@@ -234,7 +236,7 @@ namespace aasted
                     }
                     rng.MoveRight(WdUnits.wdCell);
                     rng.set_Style(_aastedPriceStyle);
-                    rng.Text = _heading1ToAastedPrice[Helper.RemoveWhiteSpace(price.Text)];
+                    rng.Text = _heading1PosToAastedPrice[price.Pos];
 
                     tbl.Rows.Add();
                     rng.MoveRight(WdUnits.wdCell);

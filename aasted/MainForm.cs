@@ -33,27 +33,19 @@ namespace aasted
             Go();
         }
 
-        private void MainForm_Activated(object sender, EventArgs e)
-        {
-        }
-
         private void Go()
         {
             pbOverWrite.Enabled = false;
             pbClose.Enabled = false;
             _MainFormManager = new MainFormManager();
+            _MainFormManager.ShowMessage += (o, e) => SetDocumentText(e.Message);
+
             try
             {
-                SetDocumentText("Processing file. Please wait");
-                Application.DoEvents();
                 Cursor.Current = Cursors.WaitCursor;
                 string resultingFile = _MainFormManager.TryProcessLatestFile();
-                SetDocumentText(_MainFormManager.ValidationErrors);
-                //Application.DoEvents();
-                if (!string.IsNullOrEmpty(resultingFile))
-                    System.Diagnostics.Process.Start(resultingFile);
-
-
+                //if (!string.IsNullOrEmpty(resultingFile))
+                //    System.Diagnostics.Process.Start(resultingFile);
             }
             catch (Exception ex)
             {
@@ -61,7 +53,7 @@ namespace aasted
             }
             finally
             {
-                pbOverWrite.Enabled = !_MainFormManager.ValidDocument;
+                pbOverWrite.Enabled = false; // !_MainFormManager.ValidDocument;
                 pbClose.Enabled = true;
                 Cursor.Current = Cursors.Default;
             }
@@ -69,10 +61,13 @@ namespace aasted
 
         private void SetDocumentText(string txt)
         {
+            Application.DoEvents();
             webBrowser1.Navigate("about:blank");
             webBrowser1.Document.OpenNew(false);
             webBrowser1.Document.Write(txt);
+            Application.DoEvents();
             webBrowser1.Refresh();
+            Application.DoEvents();
         }
 
         private void pbOverWrite_Click(object sender, EventArgs e)

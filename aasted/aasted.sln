@@ -5,16 +5,30 @@ VisualStudioVersion = 16.0.32602.291
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aasted", "aasted.csproj", "{7A0959A3-1A12-4B2C-B806-BC5BEDA53939}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixSharpInstall", "WixSharpInstall\WixSharpInstall.csproj", "{2EAFB1CB-F407-43EB-BFA3-5628F1F8D547}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7A0959A3-1A12-4B2C-B806-BC5BEDA53939}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7A0959A3-1A12-4B2C-B806-BC5BEDA53939}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A0959A3-1A12-4B2C-B806-BC5BEDA53939}.Debug|x64.ActiveCfg = Debug|x64
+		{7A0959A3-1A12-4B2C-B806-BC5BEDA53939}.Debug|x64.Build.0 = Debug|x64
 		{7A0959A3-1A12-4B2C-B806-BC5BEDA53939}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A0959A3-1A12-4B2C-B806-BC5BEDA53939}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A0959A3-1A12-4B2C-B806-BC5BEDA53939}.Release|x64.ActiveCfg = Release|x64
+		{7A0959A3-1A12-4B2C-B806-BC5BEDA53939}.Release|x64.Build.0 = Release|x64
+		{2EAFB1CB-F407-43EB-BFA3-5628F1F8D547}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EAFB1CB-F407-43EB-BFA3-5628F1F8D547}.Debug|x64.ActiveCfg = Debug|x64
+		{2EAFB1CB-F407-43EB-BFA3-5628F1F8D547}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EAFB1CB-F407-43EB-BFA3-5628F1F8D547}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EAFB1CB-F407-43EB-BFA3-5628F1F8D547}.Release|x64.ActiveCfg = Release|x64
+		{2EAFB1CB-F407-43EB-BFA3-5628F1F8D547}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

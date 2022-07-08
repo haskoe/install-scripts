@@ -23,32 +23,39 @@ namespace aasted.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection DocDirectories {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["DocDirectories"]));
-            }
-            set {
-                this["DocDirectories"] = value;
-            }
-        }
-        
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Temp")]
-        public string TempDirName {
+        public string TempSubDirName {
             get {
-                return ((string)(this["TempDirName"]));
+                return ((string)(this["TempSubDirName"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Ready")]
-        public string OutputDirName {
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\henri\\dev\\haskoe\\install-scripts\\aasted\\test")]
+        public string DocDirName {
             get {
-                return ((string)(this["OutputDirName"]));
+                return ((string)(this["DocDirName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Kan ikke finde et nyt dokument i")]
+        public string ErrorMessageNoDocs {
+            get {
+                return ((string)(this["ErrorMessageNoDocs"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Kan ikke åbne dokument eller dokument er låst")]
+        public string ErrorMessageCouldNotOpenDoc {
+            get {
+                return ((string)(this["ErrorMessageCouldNotOpenDoc"]));
             }
         }
     }

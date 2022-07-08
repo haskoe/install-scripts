@@ -6,10 +6,28 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Windows.Forms;
 
+using Res = aasted.Properties.Resources;
+
 namespace aasted
 {
     public class MainFormManager
     {
+        public class ShowMessageEventArgs : EventArgs
+        {
+            public string Message { get; private set; }
+
+            private ShowMessageEventArgs(string message)
+            {
+                Message = message;
+            }
+
+            public static ShowMessageEventArgs New(string message) => new ShowMessageEventArgs(message);
+        }
+
+        public EventHandler<ShowMessageEventArgs> ShowMessage;
+
+        private void InvokeShowMessage(string message) => ShowMessage?.Invoke(this, ShowMessageEventArgs.New(message.Replace(Environment.NewLine,"<br/>")));
+
         private static Regex DATEFORMAT_POSTFIX_REGEX = new Regex(string.Format(@"-\d{{{0}}}\.", AastedHelper.DATEFORMAT_POSTFIX.Length));
         public bool IsProcessed(string docFileName) => PostFixStart(docFileName) > 0;
 
@@ -33,7 +51,10 @@ namespace aasted
         {
             CanOverwrite = false;
             string result = null;
+
             string docDir = Properties.Settings.Default.DocDirName;
+            InvokeShowMessage(string.Format(Res.FindingMostRecentEditedDocument, docDir));
+
             var recentDocuments = Directory.EnumerateFiles(Environment.GetFolderPath(Environment.SpecialFolder.Recent))
                 .Where(sc => Helper.IsShortcutLink(sc, "doc"))
                 .Select(sc => Helper.GetShortcutTargetFile(sc))
@@ -44,8 +65,12 @@ namespace aasted
                 .ToArray();
 
             if (!lastAccessedFiles.Any())
-                ThrowError(Properties.Settings.Default.ErrorMessageNoDocs + " " + docDir);
+            {
+                InvokeShowMessage(string.Format(Res.CouldNotFindDocument, docDir));
+                return null;
+            }
 
+            InvokeShowMessage(string.Format(Res.ProcessingFile, docDir));
             _docFileName = lastAccessedFiles.First();
             try
             {
@@ -56,24 +81,31 @@ namespace aasted
             }
             catch (Exception ex)
             {
-                ThrowError(Properties.Settings.Default.ErrorMessageCouldNotOpenDoc + " " + _docFileName);
+                InvokeShowMessage(string.Format(Res.ErrorMessageDocumentIsLocked, _docFileName));
+                return null;
             }
 
             _currentWorkFileName = AastedHelper.ProcessedDocFileName(_docFileName, TempDir(_docFileName));
             try
             {
                 _macro = new AastedPriceMacro(_docFileName, _currentWorkFileName);
-                CanOverwrite = true;
+                CanOverwrite = false;
+
+                Overwrite();
                 if (ValidDocument)
                 {
-                    Overwrite();
-                    result = _docFileName;
+                    InvokeShowMessage(string.Format(Res.DocumentProcessed, _docFileName));
                 }
-
+                else
+                {
+                    InvokeShowMessage(string.Format(Res.DocumentProcessedWithErrors, _docFileName, ValidationErrors));
+                }
+                result = _docFileName;
             }
             catch (Exception ex)
             {
-                ThrowError(Properties.Settings.Default.ErrorMessageCouldNotOpenDoc + " " + _docFileName);
+                InvokeShowMessage(string.Format(Res.ErrorMessageCouldNotOpenDocument, _docFileName, ex.ToString()));
+                return null;
             }
 
             return result;
@@ -81,17 +113,9 @@ namespace aasted
 
         public string Overwrite()
         {
-            if (!CanOverwrite)
-                throw new ApplicationException("Overwrite called but cannot overwrite");
-
-            File.Copy(_currentWorkFileName, _docFileName);
+            File.Copy(_currentWorkFileName, _docFileName, true);
             File.Delete(_currentWorkFileName);
             return _docFileName;
-        }
-
-        private void ThrowError(string errorMessage)
-        {
-            throw new ApplicationException(errorMessage);
         }
 
         private int PostFixStart(string docFileName) => Helper.RegExMatchStart(DATEFORMAT_POSTFIX_REGEX, docFileName);

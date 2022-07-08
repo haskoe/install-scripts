@@ -105,8 +105,7 @@ namespace aasted
             this.ClientSize = new System.Drawing.Size(929, 601);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "MainForm";
-            this.Text = "MainForm";
-            this.Activated += new System.EventHandler(this.MainForm_Activated);
+            this.Text = "Aasted PrisIndeks";
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
